@@ -1,5 +1,7 @@
 # Deploy and Host Appsmith with Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/appsmith-27-community?referralCode=20H68q)
+
 Appsmith is an open-source low-code platform for building internal tools: admin panels, dashboards, CRUD apps and approval workflows on top of your databases and APIs. This community template runs Appsmith Community Edition 2.7.2 and creates the first administrator from Railway variables before the site goes online, with sign-up closed to strangers.
 
 ## About Hosting Appsmith
