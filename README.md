@@ -38,7 +38,7 @@ Appsmith ships as one all-in-one container: a Java backend, the editor, a realti
 
 Invalid values never break the deploy. A password outside 8-48 characters still creates the administrator, but with a random password nobody knows, until you set a valid `ADMIN_PASSWORD` and redeploy. Forgot the password? Set a new `ADMIN_PASSWORD` and `ADMIN_PASSWORD_RESET=true`, redeploy, then set it back to `false`.
 
-**Users.** `APPSMITH_SIGNUP_DISABLED=true` means only invited users can join. Invite people from a workspace's Share dialog. Set it to `false` only if everyone who can reach the URL may create an account.
+**Users.** `APPSMITH_SIGNUP_DISABLED=true` means only invited users can join. Invite people from a workspace's Share dialog. Set it to `false` only if everyone who can reach the URL may create an account. Appsmith creates the accounts listed in `APPSMITH_ADMIN_EMAILS` at boot without a password, and such an account can be claimed through the sign-up form by anyone who knows the address; this template sets the administrator's password before the domain is routed, so that path is closed. If you add more admin e-mails, invite those people right away.
 
 **Ports.** Appsmith serves on port 80 inside the container (`APPSMITH_HTTP_PORT`), which is what the public domain targets. `PORT` (8081) is a private healthcheck that answers only when the administrator exists and Appsmith is healthy.
 
@@ -48,7 +48,7 @@ Invalid values never break the deploy. A password outside 8-48 characters still 
 
 **E-mail.** Invitations and password resets need e-mail (Admin Settings > Email). Railway allows outbound SMTP only on the Pro plan.
 
-**Resources and plans.** Appsmith is heavy because everything runs in one container. Measured on Railway (2026-11-24): about 1.5-2 GB of RAM at idle with the default 1 GB Java heap, so expect roughly $15-25 a month. It does not fit Trial or Free plans (1 GB per service); use Hobby or Pro. Raise `APPSMITH_JAVA_HEAP_ARG` (for example `-Xmx2048m`) and the service's memory for many users.
+**Resources and plans.** Appsmith is heavy because everything runs in one container. Measured on Railway (2026-11-24): about 1.4 GB of RAM at idle with the default 1 GB Java heap, so expect roughly $15-20 a month. It does not fit Trial or Free plans (1 GB per service); use Hobby or Pro. Raise `APPSMITH_JAVA_HEAP_ARG` (for example `-Xmx2048m`) and the service's memory for many users.
 
 **Backups.** Run `appsmithctl backup` in the service's shell; archives are written to `/appsmith-stacks/data/backup` on the volume. Railway volume backups cover the whole volume. Keep `docker.env` together with backups: it holds the encryption keys.
 

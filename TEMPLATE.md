@@ -16,7 +16,7 @@ Pinned 2026-11-24: Appsmith CE v2.7.2 (2026-11-19). Image ≈1.1 GB compressed (
 ## Design
 
 - All-in-one image (upstream's recommended Docker deployment): embedded MongoDB and Redis on the same volume.
-- First admin: `railway-admin.sh` waits for `/api/v1/health`, reads `emptyInstance` from `/api/v1/users/me`, then posts the setup form to `/api/v1/users/super` (`X-Requested-By: Appsmith`, `Origin`). Railway's healthcheck (`railway-healthz.mjs` on `PORT`) returns 200 only after a marker is written, so the public domain is never routed to an instance with the open "create admin" page. Unusable password → random password + lock marker. Reset/unlock: BCrypt hash from `caddy hash-password`, written with `mongosh` into `user.password`.
+- First admin: Appsmith's migration `Migration10000_UpdateSuperUser` (runs on every boot) creates every e-mail in `APPSMITH_ADMIN_EMAILS` as a super user WITHOUT a password. Verified on the test deploy: with sign-up disabled, anyone could still sign up with that e-mail and become instance admin. `railway-admin.sh` waits for `/api/v1/health`, finds the user in the embedded MongoDB (`mongosh`), and sets its BCrypt password (`caddy hash-password`) before the healthcheck passes. If the instance has no user at all (admin e-mails emptied), it posts the setup form to `/api/v1/users/super` instead. Railway's healthcheck (`railway-healthz.mjs` on `PORT`) returns 200 only after this, so the public domain is never routed to an unclaimed instance. Unusable password → random password + lock marker; reset/unlock with a valid `ADMIN_PASSWORD` via the same hash update.
 - `APPSMITH_SIGNUP_DISABLED=true`, `APPSMITH_ADMIN_EMAILS=${{ADMIN_EMAIL}}`, telemetry off, Java heap 1 GB.
 
 ## Improvements over market templates
@@ -29,7 +29,7 @@ Market (2026-11): `appsmith/appsmith-ee:latest` (Enterprise image, floating tag,
 
 ## Resources
 
-Measured on Railway (see `_reports/round13/213-appsmith.md`). Estimate ≈ 1.5-2 GB idle → ≈ $15-25/month. Minimum plan: Hobby.
+Measured on Railway, test project, 2026-11-24 (Appsmith CE v2.7.2): 1.37 GB idle (backend, editor, RTS, MongoDB, Redis, Caddy). Estimate ≈ $15-20/month. Minimum plan: Hobby.
 
 Railway prices: RAM $10/GB-month, vCPU $20/vCPU-month, volume $0.15/GB-month.
 
